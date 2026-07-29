@@ -1,0 +1,20 @@
+name: Unprivileged PR Workflow
+
+on:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Print upstream identities
+        run: |
+          echo "UPSTREAM_ACTOR=${{ github.actor }}"
+          echo "UPSTREAM_TRIGGERING_ACTOR=${{ github.triggering_actor }}"
+          echo "PR_AUTHOR=${{ github.event.pull_request.user.login }}"
+          echo "PR_HEAD_REPO=${{ github.event.pull_request.head.repo.full_name }}"
+          echo "PR_HEAD_SHA=${{ github.event.pull_request.head.sha }}"
