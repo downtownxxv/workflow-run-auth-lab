@@ -1,0 +1,39 @@
+name: Claude Workflow Run Authorization Test
+
+on:
+  workflow_run:
+    workflows:
+      - Unprivileged PR Workflow
+    types:
+      - completed
+
+permissions:
+  contents: read
+
+jobs:
+  authorization-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Record authorization context
+        run: |
+          echo "CLAUDE_TEST_ACTOR=${{ github.actor }}"
+          echo "CLAUDE_TEST_TRIGGERING_ACTOR=${{ github.triggering_actor }}"
+          echo "UPSTREAM_ACTOR=${{ github.event.workflow_run.actor.login }}"
+          echo "UPSTREAM_EVENT=${{ github.event.workflow_run.event }}"
+
+      - name: Checkout trusted base branch
+        uses: actions/checkout@v6
+
+      - name: Run Claude Code authorization test
+        uses: anthropics/claude-code-action@v1
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          prompt: |
+            This is a controlled authorization test.
+            Read README.md and return exactly:
+            WORKFLOW_RUN_AUTH_TEST_REACHED
+          claude_args: |
+            --allowedTools "Read"
+            --max-turns 1
