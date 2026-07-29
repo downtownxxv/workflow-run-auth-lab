@@ -1,0 +1,27 @@
+name: Workflow Run Actor Test
+
+on:
+  workflow_run:
+    workflows:
+      - Unprivileged PR Workflow
+    types:
+      - completed
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Print downstream identities
+        run: |
+          echo "DOWNSTREAM_ACTOR=${{ github.actor }}"
+          echo "DOWNSTREAM_TRIGGERING_ACTOR=${{ github.triggering_actor }}"
+          echo "WORKFLOW_RUN_ACTOR=${{ github.event.workflow_run.actor.login }}"
+          echo "WORKFLOW_RUN_TRIGGERING_ACTOR=${{ github.event.workflow_run.triggering_actor.login }}"
+          echo "WORKFLOW_RUN_EVENT=${{ github.event.workflow_run.event }}"
+          echo "WORKFLOW_RUN_HEAD_REPO=${{ github.event.workflow_run.head_repository.full_name }}"
+          echo "WORKFLOW_RUN_HEAD_BRANCH=${{ github.event.workflow_run.head_branch }}"
+          echo "WORKFLOW_RUN_HEAD_SHA=${{ github.event.workflow_run.head_sha }}"
